@@ -55,7 +55,7 @@ aider-mini/ (Repository Root)
 ├── mini/                      # CLEAN CUSTOM SANDBOX
 │   ├── __init__.py
 │   ├── cli.py                 # Interactive CLI command loop (/sys, /read, /map, /file, /apply)
-│   ├── sys-prompt.py          # Modular system prompt templates
+│   ├── sys_prompt.py          # Modular system prompt templates
 │   ├── context.py             # Read-Only and active file context engine
 │   ├── repomap.py             # Tree-Sitter repo map extractor wrapper
 │   ├── editor.py              # Clipboard listener & SEARCH/REPLACE diff applier
@@ -68,7 +68,7 @@ aider-mini/ (Repository Root)
 
 ## 6. Development Roadmap
 
-- **Step 1: System Prompt Module (`mini/sys-prompt.py`)**
+- **Step 1: System Prompt Module (`mini/sys_prompt.py`)**
    - Builds modern system rules prompt, including `SEARCH/REPLACE` diff examples.
 - **Step 2: File Context Module (`mini/context.py`)**
    - Creates context from specified read-only files, e.g., coding conventions.
