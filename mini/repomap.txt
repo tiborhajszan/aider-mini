@@ -1,0 +1,353 @@
+
+aider\args_formatter.py:
+⋮
+│class DotEnvFormatter(argparse.HelpFormatter):
+│    def start_section(self, heading):
+│        res = "\n\n"
+│        res += "#" * (len(heading) + 3)
+│        res += f"\n# {heading}"
+⋮
+│class YamlHelpFormatter(argparse.HelpFormatter):
+│    def start_section(self, heading):
+│        res = "\n\n"
+│        res += "#" * (len(heading) + 3)
+│        res += f"\n# {heading}"
+⋮
+│class MarkdownHelpFormatter(argparse.HelpFormatter):
+│    def start_section(self, heading):
+⋮
+
+aider\coders\base_prompts.py:
+│class CoderPrompts:
+⋮
+
+aider\coders\chat_chunks.py:
+⋮
+│@dataclass
+│class ChatChunks:
+│    system: List = field(default_factory=list)
+⋮
+│    def add_cache_control(self, messages):
+⋮
+
+aider\coders\search_replace.py:
+⋮
+│def read_text(fname):
+⋮
+
+aider\commands.py:
+⋮
+│class Commands:
+⋮
+
+aider\editor.py:
+⋮
+│def print_status_message(success, message, style=None):
+⋮
+│def write_temp_file(
+│    input_data="",
+│    suffix=None,
+│    prefix=None,
+│    dir=None,
+⋮
+│def get_environment_editor(default=None):
+⋮
+│def discover_editor(editor_override=None):
+⋮
+
+aider\exceptions.py:
+⋮
+│@dataclass
+│class ExInfo:
+⋮
+
+aider\format_settings.py:
+│def scrub_sensitive_info(args, text):
+⋮
+
+aider\gui.py:
+⋮
+│class CaptureIO(InputOutput):
+│    lines = []
+│
+│    def tool_output(self, msg, log_only=False):
+⋮
+│    def tool_error(self, msg):
+⋮
+│    def tool_warning(self, msg):
+⋮
+
+aider\io.py:
+⋮
+│def ensure_hash_prefix(color):
+⋮
+│class InputOutput:
+│    num_error_outputs = 0
+⋮
+│    def read_text(self, filename, silent=False):
+⋮
+│    def write_text(self, filename, content, max_retries=5, initial_delay=0.1):
+⋮
+│    @restore_multiline
+│    def confirm_ask(
+│        self,
+│        question,
+│        default="y",
+│        subject=None,
+│        explicit_yes_required=False,
+│        group=None,
+│        allow_never=False,
+⋮
+│    def tool_error(self, message="", strip=True):
+⋮
+│    def tool_warning(self, message="", strip=True):
+⋮
+│    def tool_output(self, *messages, log_only=False, bold=False):
+⋮
+│    def print(self, message=""):
+⋮
+│    def append_chat_history(self, text, linebreak=False, blockquote=False, strip=True):
+⋮
+
+aider\mdstream.py:
+⋮
+│class MarkdownStream:
+⋮
+
+aider\onboarding.py:
+⋮
+│def try_to_select_default_model():
+⋮
+│class DummyAnalytics:
+⋮
+
+aider\website\assets\asciinema\asciinema-player.min.js:
+│var AsciinemaPlayer=function(A){"use strict";function g(A){return"number"==typeof A?A:"string"==typ
+
+benchmark\clone-exercism.sh:
+⋮
+│languages=("cpp" "go" "java" "javascript" "python" "rust")
+│
+⋮
+
+benchmark\rsync.sh:
+⋮
+│sync_repo() {
+│    # Sync the repository
+│    rsync -avz --delete \
+│          --exclude-from="$EXCLUDE_FILE" \
+│          "$REPO_ROOT/" \
+│          "$DEST:~/aider/" || sleep 0.1
+│    
+│    rsync -av .env .gitignore .aider.model.settings.yml "$DEST:~/aider/." || sleep 0.1
+│
+│    echo Done syncing, waiting.
+⋮
+
+mini\sys_prompt.py:
+⋮
+│def copy_sys_prompt() -> bool:
+⋮
+
+tests\basic\test_onboarding.py:
+⋮
+│class DummyIO:
+│    def tool_output(self, *args, **kwargs):
+⋮
+│    def tool_warning(self, *args, **kwargs):
+⋮
+│    def tool_error(self, *args, **kwargs):
+⋮
+│    def confirm_ask(self, *args, **kwargs):
+⋮
+
+tests\fixtures\languages\chatito\test.chatito:
+⋮
+│~[endPolite]
+⋮
+
+tests\fixtures\languages\csharp\test.cs:
+⋮
+│namespace Greetings {
+│    public interface IGreeter {
+│        string Greet(string name);
+│    }
+│
+│    public class Person {
+│        public string Name { get; set; }
+│        public int Age { get; set; }
+│
+│        public Person(string name, int age) {
+⋮
+│    public class FormalGreeter : IGreeter {
+│        private const string PREFIX = "Good day";
+│        private static readonly int MAX_AGE = 150;
+│
+│        public string Greet(string name) {
+│            return $"{PREFIX}, {name}!";
+│        }
+│
+│        public string GreetPerson(Person person) {
+│            return $"{PREFIX}, {person.Name} ({person.Age})!";
+⋮
+
+tests\fixtures\languages\d\test.d:
+⋮
+│class Greeter {
+│    private string name;
+│    
+│    this(string name) {
+│        this.name = name;
+│    }
+│    
+│    string greet() {
+│        return "Hello, " ~ name ~ "!";
+│    }
+⋮
+
+tests\fixtures\languages\elm\test.elm:
+⋮
+│type Greeting
+⋮
+
+tests\fixtures\languages\go\test.go:
+⋮
+│type FormalGreeter struct {
+│    Prefix string
+⋮
+
+tests\fixtures\languages\hcl\test.tf:
+⋮
+│variable "aws_region" {
+│  description = "AWS region for resources"
+│  type        = string
+│  default     = "us-west-2"
+⋮
+│variable "environment" {
+│  description = "Environment name"
+│  type        = string
+⋮
+
+tests\fixtures\languages\java\test.java:
+│public interface Greeting {
+⋮
+
+tests\fixtures\languages\javascript\test.js:
+⋮
+│class Person {
+│    constructor(name) {
+│        this.name = name;
+│    }
+│
+│    sayHello() {
+│        return `Hello, ${this.name}!`;
+│    }
+⋮
+
+tests\fixtures\languages\kotlin\test.kt:
+│interface Greeting {
+⋮
+
+tests\fixtures\languages\properties\test.properties:
+⋮
+│server.maxConnections=100
+
+tests\fixtures\languages\r\test.r:
+⋮
+│process_data <- function(data) {
+│  # Process some data
+│  return(data * 2)
+⋮
+
+tests\fixtures\languages\rust\test.rs:
+⋮
+│trait Greeting {
+│    fn greet(&self) -> String;
+⋮
+
+tests\fixtures\languages\scala\test.scala:
+⋮
+│class FormalGreeter(prefix: String) extends Greeter {
+│  // A method definition
+│  override def greet(name: String): String = {
+│    s"$prefix, $name!"
+│  }
+│  
+│  // A val definition
+│  val defaultPrefix: String = "Hello"
+│  
+│  // A var definition
+⋮
+│enum Greeting {
+│  // Simple enum cases
+│  case Hello, Hi, Hey
+│  
+│  // Full enum case with parameters
+│  case Custom(text: String)
+⋮
+│class Container[T](val value: T) {
+│  def map[U](f: T => U): Container[U] = new Container(f(value))
+⋮
+│class CasualGreeter extends Greeter {
+│  override def greet(name: String): String = s"Hey, $name!"
+⋮
+
+tests\fixtures\languages\solidity\test.sol:
+⋮
+│contract SimpleStorage {
+│    uint256 private value;
+│    
+│    event ValueChanged(uint256 newValue);
+│    
+│    constructor(uint256 initialValue) {
+│        value = initialValue;
+│    }
+│    
+│    function setValue(uint256 newValue) public {
+⋮
+
+tests\fixtures\languages\udev\test.rules:
+⋮
+│LABEL="my_peripheral"
+⋮
+
+tests\fixtures\watch.py:
+⋮
+│def dummy_function():
+⋮
+
+tests\scrape\test_playwright_disable.py:
+⋮
+│class DummyIO:
+│    def __init__(self):
+│        self.outputs = []
+⋮
+│    def tool_output(self, msg):
+⋮
+│    def confirm_ask(self, msg, default="y"):
+⋮
+│    def tool_error(self, msg):
+⋮
+│def test_commands_web_disable_playwright(monkeypatch):
+│    """
+│    Test that Commands.cmd_web does not emit a misleading warning when --disable-playwright is set.
+⋮
+│    class DummyIO:
+│        def __init__(self):
+│            self.outputs = []
+│            self.warnings = []
+⋮
+│        def tool_output(self, msg, *a, **k):
+⋮
+│        def tool_warning(self, msg, *a, **k):
+⋮
+│        def tool_error(self, msg, *a, **k):
+⋮
+│        def read_text(self, filename, silent=False):
+⋮
+│        def confirm_ask(self, *a, **k):
+⋮
+│        def print(self, *a, **k):
+⋮
+│    class DummyCoder:
+⋮
