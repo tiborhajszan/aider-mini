@@ -18,21 +18,18 @@
 ## Architectural Pillars
 
 **Aider Mini** is structured around two main pillars:
-<br><br>
-```text
-                            ┌─────────────────────────┐
-                            │   AIDER-MINI ENGINE     │
-                            └────────────┬────────────┘
-                                         │
-                ┌────────────────────────┴──────────────────────────┐
-                ▼                                                   ▼
-    PILLAR 1: EYES (Context)                              PILLAR 2: HANDS (Editor)
-    Modular On-Demand Prompt Generator                    Clipboard Listener & File Editor
-    • System Prompt (/sys)                                • Reads response from clipboard
-    • Tree-Sitter Repository Map (/map)                   • Parses SEARCH/REPLACE blocks
-    • Read-Only Files (/read)                             • Validates line matching and diffs
-    • Active File (/file)                                 • Applies changes directly to disk
-```
+
+### Pillar 1: EYES | Modular On-Demand Context/Prompt Generator
+- System Prompt (`/sys`)
+- Tree-Sitter Repository Map (`/map`)
+- Read-Only Files (`/read`)
+- Active File (`/file`)
+
+### Pillar 2: HANDS | Clipboard Listener & File Editor
+- Reads web model response from clipboard.
+- Parses `SEARCH/REPLACE` blocks.
+- Validates line matching and diffs.
+- Applies changes directly to disk.
 
 ## Key Features & CLI Commands
 
@@ -70,11 +67,18 @@ aider-mini/ (Repository Root)
 ## Development Roadmap
 
 - **Phase 1: System Prompt Module (`mini/sys_prompt.py`)**
-   - Builds modern system rules prompt, including `SEARCH/REPLACE` diff examples.
+    - Builds modern system rules prompt, including `SEARCH/REPLACE` diff examples.
 - **Phase 2: Tree-Sitter Repository Map Wrapper (`mini/repomap.py`)**
-   - Exposes Aider's Tree-Sitter Repository Map generator to a standalone `/map` CLI output.
+    - Exposes Aider's Tree-Sitter Repository Map generator to a standalone `/map` CLI output.
 - **Phase 3: File Context Module (`mini/context.py`)**
-   - Creates context from specified read-only files, e.g., coding conventions.
-   - Autodetects focused/active editor files and assembles context from them.
+    - Creates context from specified read-only files, e.g., coding conventions.
+    - Autodetects focused/active editor files and assembles context from them.
 - **Phase 4: File Editor (`mini/editor.py`)**
-   - Extracts Aider's `EditBlockCoder` parsing logic to apply clipboard diffs to local files.
+    - Extracts Aider's `EditBlockCoder` parsing logic to apply clipboard edits to local files.
+
+## **Summary: Line-by-Line Stateful Parser Strategy**
+
+* **Core Approach:** Replace the monolithic regex with a deterministic State Machine that parses payload line-by-line (`EXPECTING_FENCE` $\rightarrow$ `EXPECTING_PATH` $\rightarrow$ `EXPECTING_SEARCH` $\rightarrow$ `READING_SEARCH` $\rightarrow$ `READING_REPLACE` $\rightarrow$ `EXPECTING_CLOSING_FENCE`).
+* **Strict Boundaries:** Shell markers (fences, path line, `<SEARCH`, `>REPLACE`) must strictly adhere to exact specifications. Any violation halts parsing immediately, returning a detailed error message for LLM retry/reprompting.
+* **Raw Payload Integrity:** Code lines within `SEARCH` and `REPLACE` blocks are captured completely untouched into lists—preserving 100% of relative indentation, whitespace, and empty lines.
+* **Line Ending Normalization:** Pre-process the payload at entry with `.replace("\r\n", "\n").split("\n")` to ensure OS-agnostic comparisons without stripping internal empty lines or trailing structural breaks.
