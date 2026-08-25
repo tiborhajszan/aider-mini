@@ -45,24 +45,24 @@ Instead of generating a massive, monolithic prompt on every interaction, **Aider
 
 ## Directory Structure & Technical Footprint
 
-**Aider Mini** currently resides in the root directory of the forked **Aider** repository to maintain total isolation while preserving the ability to import battle-tested utilities (Tree-Sitter Repo Map, Diff Parsers, and local model connectors).
-<br><br>
-```text
-aider-mini/ (Repository Root)
-├── mini/                      # CLEAN CUSTOM SANDBOX
-│   ├── __init__.py
-│   ├── cli.py                 # Interactive CLI command loop (/sys, /map, /read, /file, /apply)
-│   ├── sys_prompt.py          # System Prompt generator
-│   ├── repomap.py             # Tree-Sitter Repository Map extractor wrapper
-│   ├── context.py             # Read-Only and Active File context engine
-│   ├── prompts.py             # Prompt template repository
-│   ├── editor.py              # Clipboard listener and SEARCH/REPLACE diff applier
-│   └── project-brief.md       # Project Brief and conversation reference
-│
-├── aider/                     # Original Aider codebase (dormant building blocks)
-├── pyproject.toml             # Package config registering `mini` command
-└── .venv/                     # Python virtual environment
-```
+### Project Root: `aider-mini/`
+Contains all folders/files of the forked **Aider** repository.
+- `markdown.css`: Stylesheet for Vs Code markdown viewer.
+- `pyproject.toml`: Package configuration file registering the `mini` CLI launch command.
+
+### Environment: `aider-mini/.venv/`
+Contains the Python 3.14.3 virtual environment.
+
+### Custom Sandbox: `aider-mini/mini/`
+Contains all folders/files of **Aider Mini** in isolation while preserving the ability to import battle-tested **Aider** utilities (Tree-Sitter Repo Map, Diff Parsers, and local model connectors).
+- `cli.py`: **Aider Mini** launch point, interactive CLI command loop.
+- `project-brief.md`: **Aider Mini** project blueprint (this file).
+
+### Editor Module: `aider-mini/mini/editor/`
+**Aider Mini Right Hand:** Applies web model edit instructions to local files.
+- `editor.py`: Module launch point and workflow orchestrator.
+- `parser.py`: Model response parser that isolates `SEARCH/REPLACE` blocks.
+- `search.py`: Target file and `SEARCH` block matching engine.
 
 ## Development Roadmap
 
@@ -73,8 +73,8 @@ aider-mini/ (Repository Root)
 - **Phase 3: File Context Module (`mini/context.py`)**
     - Creates context from specified read-only files, e.g., coding conventions.
     - Autodetects focused/active editor files and assembles context from them.
-- **Phase 4: File Editor (`mini/editor.py`)**
-    - Extracts Aider's `EditBlockCoder` parsing logic to apply clipboard edits to local files.
+- **Phase 4: Editor Module (`aider-mini/mini/editor/*`)**
+    - Reproduces Aider's `EditBlockCoder` logic to extract web model resposes from the clipboard, parse web model responses to isolate SEARCH/REPLACE blocks, match SEARCH blocks to target files, and apply REPLACE blocks to local files.
 
 ## **Summary: Line-by-Line Stateful Parser Strategy**
 
