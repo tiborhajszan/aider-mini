@@ -20,7 +20,7 @@
 **Aider Mini** is structured around two main pillars:
 
 ### Pillar 1: EYES | Modular On-Demand Context/Prompt Generator
-- System Prompt (`/sys`)
+- **System Prompt Generator | `/sys` :** Copies a modern, non-bloated system instruction to the clipboard. Teaches the web model how to output `<<<<<<< SEARCH` ... `>>>>>>> REPLACE` diff edit blocks.
 - Tree-Sitter Repository Map (`/map`)
 - Read-Only Files (`/read`)
 - Active File (`/file`)
@@ -37,7 +37,6 @@ Instead of generating a massive, monolithic prompt on every interaction, **Aider
 <br><br>
 | Command | Feature | Description |
 | :--- | :--- | :--- |
-| `/sys` | **System Prompt Generator** | Copies a modern, non-bloated system instruction to the clipboard. Teaches the web model strictly to output `<<<<<<< SEARCH` ... `>>>>>>> REPLACE` diff blocks. |
 | `/map` | **Repository Map Generator** | Triggers Tree-Sitter symbol parsing over the codebase to generate a compact graph of definitions and signatures. |
 | `/read` | **Read-Only File Context** | Reads specified files, e.g., coding conventions, and formats their content as read-only context on the clipboard. |
 | `/file` | **Active File Context** | Automatically detects the currently active tab in VS Code (or specified files) and bundles its content as editable context on the clipboard. |
@@ -63,6 +62,7 @@ Contains all folders/files of **Aider Mini** in isolation while preserving the a
 - `editor.py`: Module launch point and workflow orchestrator.
 - `parser.py`: Model response parser that isolates `SEARCH/REPLACE` blocks.
 - `search.py`: Target file and `SEARCH` block matching engine.
+- `apply.py` : Diff edit executor that modifies and writes content to local target files.
 
 ## Development Roadmap
 
@@ -74,7 +74,7 @@ Contains all folders/files of **Aider Mini** in isolation while preserving the a
     - Creates context from specified read-only files, e.g., coding conventions.
     - Autodetects focused/active editor files and assembles context from them.
 - **Phase 4: Editor Module (`aider-mini/mini/editor/*`)**
-    - Reproduces Aider's `EditBlockCoder` logic to extract web model resposes from the clipboard, parse web model responses to isolate SEARCH/REPLACE blocks, match SEARCH blocks to target files, and apply REPLACE blocks to local files.
+    - Reproduces Aider's `EditBlockCoder` logic to extract web model resposes from the clipboard, parse web model responses to isolate SEARCH/REPLACE blocks, match SEARCH blocks to local target files, and apply REPLACE blocks to local target files.
 
 ## **Summary: Line-by-Line Stateful Parser Strategy**
 
