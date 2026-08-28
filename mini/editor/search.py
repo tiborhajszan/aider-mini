@@ -1,74 +1,73 @@
-# Aider Mini > Editor Module > Search Engine
-# Path: mini/editor/search.py
+### Aider Mini > Editor Module > Search Engine
+### Path: mini/editor/search.py
 
-from pathlib import Path
-
+### match search block function ########################################################################################
 def match_search_block(
-    target_path: Path,
-    active_path: Path,
-    search_block: str,
-) -> dict[str, int|str|Path|tuple[int,int]]:
+    content_list: list[str],
+    search_list: list[str],
+) -> dict[str,int|str|tuple[int,int]]:
     """
-    ### File & Search Block Matching Engine
-    - Creates/Loads target local file.
-    - Matches SEARCH block to target file.
-    - Matching allows for formatting variations.
-    - Returns structured payload dictionary (status, message, target path, slice indices).
+    ### Search Block Matching Engine
+    Matches SEARCH block contents to local target file.
+    #### Params:
+    - *content_list* > target file content as list of lines
+    - *search_list* > SEARCH block content as list of lines
+    #### Returns:
+    - *dict* > status code, status message, slice indices
     """
-    # -------------------------------------------------------------------------
-    # Filepath Resolution & Scenario Validation (using pathlib)
-    # -------------------------------------------------------------------------
-    # Scenario 1: Existing Active File Edit
-    # - Verify target_path matches active_path (via target_path.resolve() ==
-    #   active_path.resolve() or target_path.name == active_path.name).
-    # - Confirm target_path exists on disk and read file content directly from target_path.
-    # - Reject execution if target_path points to a different existing file on disk.
-    # Scenario 2: New File Creation
-    # - Check if not target_path.exists().
-    # - Treat as a file creation request and bypass SEARCH block disk matching:
-    #   -> Return {"status": 201, "target_path": target_path, "indices": (0, 0), "message": "NEW_FILE"}
-    # -------------------------------------------------------------------------
 
-    # resolving target path > resolving active path
-    resolved_target: Path = target_path.resolve()
-    resolved_active: Path = active_path.resolve()
+    ### payload helpers ------------------------------------------------------------------------------------------------
 
-    # Verify target matches the active file
-    is_active_match = (resolved_target == resolved_active) or (
-        target_path.name == active_path.name
-    )
+    ### error payload
+    def make_error(message: str) -> dict[str,int|str|tuple[int, int]]:
+        return {"status": -1, "message": message, "indices": (-1, -1),}
 
-    if not is_active_match:
-        return {
-            "status": 403,
-            "error": "TARGET_FILE_MISMATCH",
-            "message": f"Target file '{target_path}' differs from active file '{active_path}'.",
-        }
+    ### success payload
+    def make_success(indices: tuple[int,int]) -> dict[str,int|str|tuple[int,int]]:
+        return {"status": 0, "message": "OK", "indices": indices,}
 
-    # Confirm file exists on disk and read content directly from target_path
-    if not target_path.exists():
-        return {
-            "status": 404,
-            "error": "FILE_NOT_FOUND",
-            "message": f"Active file '{target_path}' does not exist on disk.",
-        }
+    ### function init --------------------------------------------------------------------------------------------------
 
-    try:
-        file_content = target_path.read_text(encoding="utf-8")
-    except Exception as e:
-        return {
-            "status": 500,
-            "error": "FILE_READ_ERROR",
-            "message": f"Failed to read file '{target_path}': {e}",
-        }
+    ### invalid content list >> returning error payload
+    if (
+        not isinstance(content_list, list)
+        or not all(isinstance(line, str) for line in content_list)
+        or any("\n" in line for line in content_list)
+    ):
+        return make_error(message="Invalid Param: match_search_block(content_list)")
+    
+    ### invalid search list >> returning error payload
+    if (
+        not isinstance(search_list, list)
+        or not all(isinstance(line, str) for line in search_list)
+        or any("\n" in line for line in search_list)
+    ):
+        return make_error(message="Invalid Param: match_search_block(search_list)")
+    
+    ### function main logic --------------------------------------------------------------------------------------------
 
-    # -------------------------------------------------------------------------
-    # Search Block Text Matching (Tiers 1-3 pending)
-    # -------------------------------------------------------------------------
+    ### search block is longer than target content >> returning error payload
+    if len(content_list) < len(search_list):
+        return make_error(message="Matching Failure: SEARCH block is longer than target content")
 
-    return {
-        "status": 200,
-        "target_path": resolved_target,
-        "indices": (-1, -1),
-        "message": "SEARCH_PENDING",
-    }
+    ### empty search_list >> returning success (0, 0) payload
+    if not search_list:
+        return make_success(indices=(0, 0))
+    
+    ### sliding window matching algorithm >> returning success (start, end) payload
+    for content_index in range(len(content_list) - len(search_list) + 1):
+        if all(
+            content_list[content_index + search_index].strip() == search_list[search_index].strip()
+            for search_index in range(len(search_list))
+        ):
+            return make_success(indices=(content_index, content_index + len(search_list)))
+        
+    ### function ends //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ### returning error payload
+    return make_error(message="Matching Failure: SEARCH block is not in target content")
+
+### test execution block ###############################################################################################
+if __name__ == "__main__":
+    result = match_search_block(content_list=["1", "         2", "3          ", " 4  "], search_list=["2", "3", "4"])
+    print("\n", result, "\n")

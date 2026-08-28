@@ -1,5 +1,5 @@
-# Aider Mini > Editor Module > Edit Executor
-# Path: mini/editor/apply.py
+### Aider Mini > Editor Module > Edit Executor
+### Path: mini/editor/apply.py
 
 from pathlib import Path
 
@@ -11,15 +11,15 @@ def apply_edits(
     target_path: Path
 ) -> dict[str,int|str]:
     """
-    ### Disk Execution & Validation
-    Applies diff edit blocks to modify file content and writes modified content to disk.
+    ### Diff Edit Executor
+    Applies diff edit blocks to modify local target files.
     #### Params:
-    - *content_list:* target file content as list of lines.
-    - *search_index:* start/stop lines of SEARCH block matched to target file content.
-    - *replace_list:* replace block content as list of lines.
-    - *target_path:* path to target file.
+    - *content_list* > target file content as list of lines
+    - *search_index* > SEARCH block slice indices
+    - *replace_list* > REPLACE block content as list of lines
+    - *target_path* > path to local target file
     #### Returns:
-    - *dict:* status code and status message.
+    - *dict* > status code, status message
     """
 
     ### function init --------------------------------------------------------------------------------------------------
