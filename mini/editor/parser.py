@@ -1,61 +1,113 @@
-# Aider Mini > File Editor Module > Clipboard Parser
-# Path: mini/editor/parser.py
+########################################################################################################################
+### Aider Mini > Editor Module > Model Response Parser
+### Path: mini/editor/parser.py
+########################################################################################################################
 
 import re
 
-def parse_edit_blocks(raw_text: str) -> dict[str, str]:
+def parse_edit_blocks(clipboard_list: list[str]) -> dict[str, int | str | list[str] | list[str]]:
     """
-    ### SEARCH/REPLACE Block Parsing
-    - Parses raw clipboard payload using regex patterns derived from Aider's `EditBlockCoder`.
-    - Extracts target file path, SEARCH code block, and REPLACE code block.
-    - Converts extracted information into a structured data object.
+    ### Model Response Parser
+    Extracts SEARCH/REPLACE diff edit blocks from the clipboard.
+    #### Params:
+    - *clipboard_list* > clipboard content as list of lines
+    #### Returns:
+    - *dict* > status code, status message, SEARCH block content, REPLACE block content
     """
 
-    # empty clipboard or invalid payload > error message > returning empty dict
-    if not isinstance(raw_text, str) or not raw_text.strip():
-        print("[!] Editor Parsing Error: Clipboard is empty or contains invalid payload.\n")
-        return {}
+    ### payload helpers ------------------------------------------------------------------------------------------------
 
-    # defining regex search pattern (diff-fenced format)
-    regex_pattern: re.Pattern[str] = re.compile(
-        r"^[ \t]*```[a-zA-Z0-9_-]*[ \t]*\r?\n"  # opening fence line (allows leading/trailing spaces + CRLF)
-        r"[ \t]*(?P<path>[^\r\n]+?)[ \t]*\r?\n"  # filepath line inside the fence
-        r"^[ \t]*<{5,9}\s*SEARCH\s*>?\s*\r?\n"   # SEARCH marker
-        r"(?P<search>[\s\S]*?)"                 # SEARCH block content
-        r"^[ \t]*={5,9}\s*\r?\n"                # DIVIDER marker
-        r"(?P<replace>[\s\S]*?)"                # REPLACE block content
-        r"^[ \t]*>{5,9}\s*REPLACE\s*\r?\n"      # REPLACE marker
-        r"^[ \t]*```[ \t]*$",                   # closing fence line (allows leading/trailing spaces)
-        re.MULTILINE
-    )
-    # extracting edit block
-    edit_block: re.Match[str] | None = regex_pattern.search(raw_text)
-    if not edit_block:
-        print("[!] Editor Parsing Error: No valid SEARCH/REPLACE block was found on the clipboard.\n")
-        return {}
+    ### error payload
+    def make_error(message: str) -> dict[str,int|str|list[str]|list[str]]:
+        return {"status": -1, "message": message, "search": [], "replace": []}
 
-    # building dictionary > returning
-    return {
-        "path": edit_block.group("path").strip(),
-        "search": edit_block.group("search"),
-        "replace": edit_block.group("replace"),
-    }
+    ### function init --------------------------------------------------------------------------------------------------
 
+    ### invalid clipboard list > returning error payload
+    if (
+        not isinstance(clipboard_list, list)
+        or not all(isinstance(line, str) for line in clipboard_list)
+        or any("\n" in line for line in clipboard_list)
+    ):
+        return make_error(message="Invalid Param: parse_edit_blocks(clipboard_list)")
+
+    ### function main logic --------------------------------------------------------------------------------------------
+
+    ### insufficient length of clipboard list > returning error payload
+    if len(clipboard_list) <= 3:
+        return make_error(message="Parsing Failure: Insufficient clipboard content")
+
+    ### loop init
+    parsing_status: int = 1
+    search_list: list[str] = []
+    replace_list: list[str] = []
+
+    ### iterating clipboard list
+    for line in clipboard_list:
+
+        #>> discarding lines until search marker found
+        if parsing_status == 1:
+            if re.match(r"^<{5,9}\sSEARCH$", line): parsing_status = 2
+            continue
+
+        #>> recording search block content until divider marker found
+        if parsing_status == 2:
+            if re.match(r"^={5,9}$", line): parsing_status = 3; continue
+            search_list.append(line); continue
+
+        #>> recording replace block content until replace marker found
+        if parsing_status == 3:
+            if re.match(r"^>{5,9}\sREPLACE$", line): parsing_status = 4; break
+            replace_list.append(line); continue
+
+    ### function ends //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ### handling parsing status
+    match parsing_status:
+
+        #>> handling parsing error
+        case 1: return make_error(message="Parsing Failure: SEARCH/REPLACE block not found")
+        case 2: return make_error(message="Parsing Failure: DIVIDER marker not found")
+        case 3: return make_error(message="Parsing Failure: REPLACE marker not found")
+
+        #>> handling parsing success
+        case 4: return {
+            "status": 0,
+            "message": "OK",
+            "search": search_list,
+            "replace": replace_list,
+        }
+
+        #>> handling status error
+        case default_val: return make_error(message=f"Parsing Failure: parsing state = {default_val} (unknown)")
+        
+### manual testing block ###############################################################################################
 if __name__ == "__main__":
+
     print("\n[!] Running in Test Mode...\n")
-    raw_text: str = """
-    ```python
-    src/utils/calculator.py
-    <<<<<<< SEARCH
-    def add(a: int, b: int) -> int:
-        return a + b
-    =======
-    def add(a: int, b: int) -> int:
-        c = a + b
-        return c
-    >>>>>>> REPLACE
-    ```
-    """
-    print(raw_text)
-    return_dict: dict[str,str] = parse_edit_blocks(raw_text=raw_text)
-    print(return_dict, "\n")
+
+    clipboard_list: list[str] = [
+        "```python",
+        "src/utils/calculator.py",
+        "<<<<<<< SEARCH",
+        "def add(a: int, b: int) -> int:",
+        "=======",
+        "def add(a: int, b: int) -> int:",
+        "    return a + b",
+        ">>>>>>> REPLACE",
+        "```"
+    ]
+
+    return_dict = parse_edit_blocks(clipboard_list=clipboard_list)
+
+    print("Status:")
+    print(return_dict["status"], return_dict["message"])
+    print()
+
+    print("SEARCH block:")
+    for line in return_dict["search"]: print(line)
+    print()
+
+    print("REPLACE block:")
+    for line in return_dict["replace"]: print(line)
+    print()
