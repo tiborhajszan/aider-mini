@@ -1,14 +1,12 @@
 # Aider Mini > Project Brief
 
-## Executive Summary & Core Motivation
+Aider Mini is a lightweight CLI coding assistant based on and built alongside the forked Aider codebase. It is intended primarily for the personal use of its developer.
 
-- **Aider Mini** is a lightweight, modular CLI wrapper built alongside and within the Aider codebase. 
-- While frontier LLMs (e.g., Claude 3.5 Sonnet, Gemini 1.5 Pro, GPT-4o) offer massive context windows and superior reasoning, using them via web interfaces creates major pain points:
-    - **Blindness:** LLMs via web interfaces cannot natively read local repository structure or active editor files.
-    - **Lack of Agency:** LLMs via web interfaces cannot write code modifications directly back to disk.
-    - Blindness and Lack of Agency forces web interface users to do tedious copy-pasting of context and edits.
-- Conversely, standard CLI AI agents (like original Aider) re-send thousands of tokens (system prompts, active files, repo maps, and history) on every single turn to accommodate stateless API models. This creates unnecessary token bloat and rigid workflows when working with stateful, large-context web interfaces.
-- Aider Mini bridges this gap by splitting responsibilities into a **Modular Prompt/Context Generator** (Eyes) and an **Automated Disk Executor** (Hands), completely bypassing heavy API loops while giving web models exact local repository vision and editing capabilities.
+## Core Motivation
+
+- **Limitations of Web Interfaces:** While frontier LLMs used via stateful web interfaces offer massive context windows and superior reasoning, the web interface itself has major limitations. *Blindness:* Web interfaces do not allow frontier LLMs to read repository structure and local files. *Lack of Agency:* Web interfaces do not allow frontier LLMs to write code modifications directly back to local files. *Copy/Pasting:* The limitations of web interfaces force users to perform tedious copy/pasting of context and edits.
+- **Limitations of APIs:** LLMs used via standard CLI and stateless API interfaces (like original Aider) re-send thousands of tokens (system prompts, repo maps, active files, and chat history) on every single turn, creating unnecessary *token bloat* and *rigid workflows*.
+- **Aider Mini** bridges this gap by aiding the user in exploiting the full potential of stateful web interfaces while avoiding the heavy prompting via stateless APIs. Aider Mini automates prompting (*Prompt/Context Generator*, Eyes), applies LLM edit instructions to local files (*File Editor*, Right Hand) and executes CLI commands requested by the LLM (*CLI Executor*, Left Hand).
 
 ## Target Audience & Primary Use Case
 
@@ -20,12 +18,11 @@
 **Aider Mini** is structured around three main pillars:
 
 ### Pillar 1: EYES | Modular On-Demand Context/Prompt Generator
-- **System Prompt Generator | `/sys`:** Copies the system prompt to the clipboard that teaches the web model how to assist the user and how to output `SEARCH/REPLACE` diff edit blocks.
-- **Repository Prompt Generator | `/repo`:** Copies the repository prompt to the clipboard that tells the web model how to access the project repository and where to find general project context.
-- Read-Only Files (`/read`)
-- Active File (`/file`)
+- **System Prompt Generator (`/sys`):** Copies the *system prompt* to the clipboard that teaches the LLM how to assist the user and how to output `SEARCH/REPLACE` diff edit blocks.
+- **Repository Prompt Generator (`/repo`):** Copies the *repository prompt* to the clipboard that tells the LLM how to access the project repository and where to find general project context.
+- **Active File Selector (`/file`):** Copies the *active file prompt* to the clipboard with instructions for the LLM on which file to edit and how to retrieve its current contents.
 
-### Pillar 2: RIGHT HAND | File Editor
+### Pillar 2: RIGHT HAND | File Editor (`/apply`)
 - Reads web model response from the clipboard.
 - Parses `SEARCH/REPLACE` diff edit blocks.
 - Matches `SEARCH` block content to local target files.
@@ -40,7 +37,6 @@ Instead of generating a massive, monolithic prompt on every interaction, **Aider
 | Command | Feature | Description |
 | :--- | :--- | :--- |
 | `/file` | **Active File Context** | Automatically detects the currently active tab in VS Code (or specified files) and bundles its content as editable context on the clipboard. |
-| `/apply` | **File Editor (Pillar 2)** | Listens to the system clipboard, extracts returned `SEARCH/REPLACE` blocks, and uses Aider's diff engine to edit files on disk instantly. |
 
 ## Directory Structure & Technical Footprint
 
@@ -72,11 +68,4 @@ Contains all folders/files of **Aider Mini** in isolation while preserving the a
 - **Phase 3: File Context Module (`mini/context.py`)**
     - Creates context from specified read-only files, e.g., coding conventions.
     - Autodetects focused/active editor files and assembles context from them.
-- **Phase 4: Editor Module | `aider-mini/mini/editor/*`:** Responds to the `/apply` CLI command. Extracts web model resposes from the clipboard. Parses web model responses to isolate `SEARCH/REPLACE` diff edit blocks. Matches `SEARCH` block contents to local target files. Applies diff edit blocks to modify local target files.
-
-## **Summary: Line-by-Line Stateful Parser Strategy**
-
-* **Core Approach:** Replace the monolithic regex with a deterministic State Machine that parses payload line-by-line (`EXPECTING_FENCE` $\rightarrow$ `EXPECTING_PATH` $\rightarrow$ `EXPECTING_SEARCH` $\rightarrow$ `READING_SEARCH` $\rightarrow$ `READING_REPLACE` $\rightarrow$ `EXPECTING_CLOSING_FENCE`).
-* **Strict Boundaries:** Shell markers (fences, path line, `<SEARCH`, `>REPLACE`) must strictly adhere to exact specifications. Any violation halts parsing immediately, returning a detailed error message for LLM retry/reprompting.
-* **Raw Payload Integrity:** Code lines within `SEARCH` and `REPLACE` blocks are captured completely untouched into lists—preserving 100% of relative indentation, whitespace, and empty lines.
-* **Line Ending Normalization:** Pre-process the payload at entry with `.replace("\r\n", "\n").split("\n")` to ensure OS-agnostic comparisons without stripping internal empty lines or trailing structural breaks.
+- **Phase 4: Editor Module (`aider-mini/mini/editor/*`):** Responds to the `/apply` CLI command. Extracts LLM resposes from the clipboard. Parses LLM responses to isolate `SEARCH/REPLACE` diff edit blocks. Matches `SEARCH` block contents to local target files. Applies diff edit blocks to modify local target files.
