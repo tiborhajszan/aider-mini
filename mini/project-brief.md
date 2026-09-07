@@ -50,7 +50,7 @@ Contains all folders/files of **Aider Mini** in isolation while preserving the a
 **Aider Mini Eyes:** Copies context/prompts to the clipboard for sending to the LLM.
 - `sys.py`: System Prompt Generator
 
-### Editor Module: `aider-mini/mini/editor/`
+### File Editor Module: `aider-mini/mini/editor/`
 **Aider Mini Right Hand:** Applies LLM edit instructions to local files.
 - `editor.py`: Edit Orchestrator
 - `parser.py`: LLM Response Parser
