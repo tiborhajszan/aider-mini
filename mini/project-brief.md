@@ -1,6 +1,6 @@
 # Aider Mini > Project Brief
 
-Aider Mini is a lightweight CLI coding assistant based on and built alongside the forked Aider codebase. It is intended primarily for the personal use of its developer.
+Aider Mini is a lightweight coding assistant with a CLI interface based on and built alongside the forked Aider codebase. It is intended primarily for the personal use of its developer.
 
 ## Core Motivation
 
@@ -17,28 +17,21 @@ Aider Mini is a lightweight CLI coding assistant based on and built alongside th
 
 **Aider Mini** is structured around three main pillars:
 
-### Pillar 1: EYES | Modular On-Demand Context/Prompt Generator
+### Pillar 1: EYES | Context/Prompt Generator
 - **System Prompt Generator (`/sys`):** Copies the *system prompt* to the clipboard that teaches the LLM how to assist the user and how to output `SEARCH/REPLACE` diff edit blocks.
 - **Repository Prompt Generator (`/repo`):** Copies the *repository prompt* to the clipboard that tells the LLM how to access the project repository and where to find general project context.
 - **Active File Selector (`/file`):** Copies the *active file prompt* to the clipboard with instructions for the LLM on which file to edit and how to retrieve its current contents.
 
-### Pillar 2: RIGHT HAND | File Editor (`/apply`)
-- Reads web model response from the clipboard.
-- Parses `SEARCH/REPLACE` diff edit blocks.
-- Matches `SEARCH` block content to local target files.
-- Applies diff edit blocks to modify content of local target files.
+### Pillar 2: RIGHT HAND | Local File Editor (`/apply`)
+- **Edit Orchestrator:** Reads the LLM response from clipboard and orchestrates the file edit pipeline.
+- **LLM Response Parser:** Parses the LLM response to isolate the received `SEARCH/REPLACE` diff edit block.
+- **Search Engine:** Matches the `SEARCH` block content to the local file to identify target lines to be edited.
+- **Diff Edit Executor:** Applies the `REPLACE` block content to modify target lines in the local file.
 
-### Pillar 3: LEFT HAND | Command Line Executor
+### Pillar 3: LEFT HAND | Command Line Executor (`/run`)
+- Executes terminal commands requested by the LLM to perform os operations and copies terminal output back to the clipboard.
 
-## Key Features & CLI Commands
-
-Instead of generating a massive, monolithic prompt on every interaction, **Aider Mini** features an **on-demand modular prompt pipeline**:
-<br><br>
-| Command | Feature | Description |
-| :--- | :--- | :--- |
-| `/file` | **Active File Context** | Automatically detects the currently active tab in VS Code (or specified files) and bundles its content as editable context on the clipboard. |
-
-## Directory Structure & Technical Footprint
+## Directory Structure
 
 ### Project Root: `aider-mini/`
 Contains all folders/files of the forked **Aider** repository.
@@ -46,26 +39,29 @@ Contains all folders/files of the forked **Aider** repository.
 - `pyproject.toml`: Package configuration file registering the `mini` CLI launch command.
 
 ### Environment: `aider-mini/.venv/`
-Contains the Python 3.14.3 virtual environment.
+Contains the **Python 3.14.3** virtual environment.
 
 ### Custom Sandbox: `aider-mini/mini/`
-Contains all folders/files of **Aider Mini** in isolation while preserving the ability to import battle-tested **Aider** utilities (Tree-Sitter Repo Map, Diff Parsers, and local model connectors).
-- `cli.py`: **Aider Mini** launch point, interactive CLI command loop.
-- `project-brief.md`: **Aider Mini** project blueprint (this file).
+Contains all folders/files of **Aider Mini** in isolation while preserving the ability to import Aider utilities.
+- `cli.py`: Aider Mini launch point, interactive CLI command loop.
+- `project-brief.md`: Aider Mini project blueprint (this file).
+
+### Prompt Generator Module: `aider-mini/mini/prompter`
+**Aider Mini Eyes:** Copies context/prompts to the clipboard for sending to the LLM.
+- `sys.py`: System Prompt Generator
 
 ### Editor Module: `aider-mini/mini/editor/`
-**Aider Mini Right Hand:** Applies web model edit instructions to local files.
-- `editor.py`: Module launch point and workflow orchestrator.
-- `parser.py`: Model response parser that isolates `SEARCH/REPLACE` diff edit blocks.
-- `search.py`: Search engine matching `SEARCH` block content to local target files.
-- `apply.py` : Diff edit executor that modifies and writes content to local target files.
+**Aider Mini Right Hand:** Applies LLM edit instructions to local files.
+- `editor.py`: Edit Orchestrator
+- `parser.py`: LLM Response Parser
+- `search.py`: Search Engine
+- `apply.py` : Diff Edit Executor
 
 ## Development Roadmap
 
-- **Phase 1: System Prompt Module (`mini/sys_prompt.py`)**
-    - Builds modern system rules prompt, including `SEARCH/REPLACE` diff examples.
+- **Phase 1:** Builds the *EYE > System Prompt Generator Module*.
 - **Phase 2: Repository Prompter Module | `mini/repo.py`:** Responds to the `/repo` CLI command. Copies the repository prompt to the clipboard. Under development...
 - **Phase 3: File Context Module (`mini/context.py`)**
     - Creates context from specified read-only files, e.g., coding conventions.
     - Autodetects focused/active editor files and assembles context from them.
-- **Phase 4: Editor Module (`aider-mini/mini/editor/*`):** Responds to the `/apply` CLI command. Extracts LLM resposes from the clipboard. Parses LLM responses to isolate `SEARCH/REPLACE` diff edit blocks. Matches `SEARCH` block contents to local target files. Applies diff edit blocks to modify local target files.
+- **Phase 4:** Builds the *RIGHT HAND > Local File Editor Module*.
