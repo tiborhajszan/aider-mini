@@ -71,7 +71,7 @@ def apply_edits(
     ### rebuilding raw file content
     raw_content: str = "\n".join(modified_content) + "\n" if modified_content else ""
 
-    ### writing to target file | handling errors
+    ### writing to target file | handling file write errors
     try:
         target_file.write_text(data=raw_content, encoding="utf-8", newline=None)
     except Exception as error:
