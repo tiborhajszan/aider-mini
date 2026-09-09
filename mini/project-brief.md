@@ -13,7 +13,7 @@ Aider Mini is a lightweight coding assistant with a CLI interface based on and b
 - **Developer Persona:** Software engineers who prefer acessing high-performing frontier LLMs via web interfaces for interactive coding, architecture, and refactoring, but want full automation for context gathering and disk file edits.
 - **Target Environment:** Local terminal (PowerShell / VS Code terminal) on Windows 11 / macOS / Linux, integrated directly into developer file-editing workflows.
 
-## Architectural Pillars
+## Architectural Pillars and Directory Structure
 
 **Aider Mini** is structured around three main pillars:
 
@@ -22,11 +22,13 @@ Aider Mini is a lightweight coding assistant with a CLI interface based on and b
 - **Repository Prompt Generator (`/repo`):** Copies the *repository prompt* to the clipboard that tells the LLM how to access the project repository and where to find general project context.
 - **Active File Selector (`/file`):** Copies the *active file prompt* to the clipboard with instructions for the LLM on which file to edit and how to retrieve its current contents.
 
-### Pillar 2: RIGHT HAND | Local File Editor (`/apply`)
-- **Edit Orchestrator:** Reads the LLM response from clipboard and orchestrates the file edit pipeline.
-- **LLM Response Parser:** Parses the LLM response to isolate the received `SEARCH/REPLACE` diff edit block.
-- **Search Engine:** Matches the `SEARCH` block content to the local file to identify target lines to be edited.
-- **Diff Edit Executor:** Applies the `REPLACE` block content to modify target lines in the local file.
+### Pillar 2 > Right Hand | Local File Editor
+- **CLI Command:** `/apply`
+- **Location:** `aider-mini/mini/editor/`
+- **`editor.py`:** Reads the LLM response from clipboard. Reads content from the local target file. Orchestrates the file edit pipeline.
+- **`parser.py`:** Parses the LLM response to isolate the `SEARCH/REPLACE` diff edit block.
+- **`search.py`:** Identifies `SEARCH` lines to be replaced in the local file.
+- **`replace.py`:** Replaces `SEARCH` lines with `REPLACE` lines in the local file.
 
 ### Pillar 3: LEFT HAND | Command Line Executor (`/run`)
 - Executes terminal commands requested by the LLM to perform os operations and copies terminal output back to the clipboard.
@@ -50,13 +52,6 @@ Contains all folders/files of **Aider Mini** in isolation while preserving the a
 **Aider Mini Eyes:** Copies context/prompts to the clipboard for sending to the LLM.
 - `sys.py`: System Prompt Generator
 
-### File Editor Module: `aider-mini/mini/editor/`
-**Aider Mini Right Hand:** Applies LLM edit instructions to local files.
-- `editor.py`: Edit Orchestrator
-- `parser.py`: LLM Response Parser
-- `search.py`: Search Engine
-- `apply.py` : Diff Edit Executor
-
 ## Development Roadmap
 
 - **Phase 1:** Builds the *EYE > System Prompt Generator Module*.
@@ -64,4 +59,4 @@ Contains all folders/files of **Aider Mini** in isolation while preserving the a
 - **Phase 3: File Context Module (`mini/context.py`)**
     - Creates context from specified read-only files, e.g., coding conventions.
     - Autodetects focused/active editor files and assembles context from them.
-- **Phase 4:** Builds the *RIGHT HAND > Local File Editor Module*.
+- **Phase 4:** Builds the *RIGHT HAND | Local File Editor Module*.
