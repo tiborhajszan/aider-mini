@@ -1,16 +1,17 @@
-### Aider Mini > Editor Module > Search Engine
-### Path: mini/editor/search.py
+########################################################################################################################
+### Aider Mini > File Editor Module > Search Block Matching
+### Path: aider-mini/mini/editor/search.py
+########################################################################################################################
 
 ### match search block function ########################################################################################
 def match_search_block(
     content_list: list[str],
     search_list: list[str],
-) -> dict[str,int|str|tuple[int,int]]:
+) -> dict[str, int | str | tuple[int, int]]:
     """
-    ### Search Block Matching Engine
-    Matches SEARCH block contents to local target file.
+    Identifies SEARCH lines to be replaced in the local file.
     #### Params:
-    - *content_list* > target file content as list of lines
+    - *content_list* > local file content as list of lines
     - *search_list* > SEARCH block content as list of lines
     #### Returns:
     - *dict* > status code, status message, slice indices
@@ -26,24 +27,6 @@ def match_search_block(
     def make_success(indices: tuple[int,int]) -> dict[str,int|str|tuple[int,int]]:
         return {"status": 0, "message": "OK", "indices": indices,}
 
-    ### function init --------------------------------------------------------------------------------------------------
-
-    ### invalid content list >> returning error payload
-    if (
-        not isinstance(content_list, list)
-        or not all(isinstance(line, str) for line in content_list)
-        or any("\n" in line for line in content_list)
-    ):
-        return make_error(message="Invalid Param: match_search_block(content_list)")
-    
-    ### invalid search list >> returning error payload
-    if (
-        not isinstance(search_list, list)
-        or not all(isinstance(line, str) for line in search_list)
-        or any("\n" in line for line in search_list)
-    ):
-        return make_error(message="Invalid Param: match_search_block(search_list)")
-    
     ### function main logic --------------------------------------------------------------------------------------------
 
     ### search block is longer than target content >> returning error payload
