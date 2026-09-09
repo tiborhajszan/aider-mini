@@ -17,15 +17,9 @@ def match_search_block(
     - *dict* > status code, status message, slice indices
     """
 
-    ### payload helpers ------------------------------------------------------------------------------------------------
+    ### function init --------------------------------------------------------------------------------------------------
 
-    ### error payload
-    def make_error(message: str) -> dict[str,int|str|tuple[int, int]]:
-        return {"status": -1, "message": message, "indices": (-1, -1),}
-
-    ### success payload
-    def make_success(indices: tuple[int,int]) -> dict[str,int|str|tuple[int,int]]:
-        return {"status": 0, "message": "OK", "indices": indices,}
+    #># param validation is handled upstream
 
     ### function main logic --------------------------------------------------------------------------------------------
 
