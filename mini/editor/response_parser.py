@@ -15,22 +15,20 @@ def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str
     - *dict* > status code, status message, SEARCH block content, REPLACE block content
     """
 
-    ### payload helper -------------------------------------------------------------------------------------------------
-
-    ### error payload
-    def make_error(message: str) -> dict[str, int | str | list[str] | list[str]]:
-        return {"status": -1, "message": message, "search": [], "replace": []}
-
     ### function init --------------------------------------------------------------------------------------------------
 
     #>> clipboard list is verified upstream
+
+    ### error payload helper
+    def error_payload(message: str) -> dict[str, int | str | list[str] | list[str]]:
+        return {"status": -1, "message": message, "search": [], "replace": []}
 
     ### parsing loop ---------------------------------------------------------------------------------------------------
 
     ### loop init
     parsing_state: int = 1
-    search_list: list[str] = list()
-    replace_list: list[str] = list()
+    search_list: list[str] = []
+    replace_list: list[str] = []
 
     ### iterating clipboard list
     for line in clipboard_list:
@@ -61,26 +59,26 @@ def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str
                 replace_list.append(line)
                 continue
 
-    ### function ends //////////////////////////////////////////////////////////////////////////////////////////////////
+    ### parsing outcome returns ----------------------------------------------------------------------------------------
 
-    ### handling parsing status
-    match parsing_status:
+    ### matching parsing state
+    match parsing_state:
 
-        #>> handling parsing error
-        case 1: return make_error(message="Parsing Failure: SEARCH/REPLACE block not found")
-        case 2: return make_error(message="Parsing Failure: DIVIDER marker not found")
-        case 3: return make_error(message="Parsing Failure: REPLACE marker not found")
+        ## returning parsing errors
+        case 1:
+            return error_payload(message="Parsing Failure > SEARCH/REPLACE Block Not Found")
+        case 2:
+            return error_payload(message="Parsing Failure > DIVIDER Marker Not Found")
+        case 3:
+            return error_payload(message="Parsing Failure > REPLACE Marker Not Found")
 
-        #>> handling parsing success
-        case 4: return {
-            "status": 0,
-            "message": "OK",
-            "search": search_list,
-            "replace": replace_list,
-        }
+        ## returning parsing success
+        case 4:
+            return {"status": 0, "message": "OK", "search": search_list, "replace": replace_list}
 
-        #>> handling status error
-        case default_val: return make_error(message=f"Parsing Failure: parsing state = {default_val} (unknown)")
+        ## returning state error
+        case default_val:
+            return error_payload(message=f"Parsing Failure > Unknown Parsing State > {default_val}")
         
 ### manual testing block ###############################################################################################
 if __name__ == "__main__":
