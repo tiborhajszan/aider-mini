@@ -1,5 +1,5 @@
 ########################################################################################################################
-### Aider Mini > File Editor Module > Search Engine
+### Aider Mini > Local File Editor > Search Engine
 ### Path: mini/editor/search.py
 ########################################################################################################################
 
@@ -19,7 +19,8 @@ def search_engine(
 
     ### function init --------------------------------------------------------------------------------------------------
 
-    #># param validation is handled upstream
+    #>> content list is verified upstream
+    #>> search list is verified upstream
 
     ### function main logic --------------------------------------------------------------------------------------------
 
