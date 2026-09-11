@@ -6,80 +6,82 @@
 import re
 
 ### response parser function ###########################################################################################
-def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str] | list[str]]:
+def response_parser(clipboard_lines: list[str]) -> dict[str, int | str | int | int | int]:
     """
-    Parses the LLM response to isolate the SEARCH/REPLACE block.
+    Parses the LLM response to locate the SEARCH/REPLACE markers.
     #### Params:
-    - *clipboard_list* > clipboard content as list of lines
+    - *clipboard_lines* > clipboard content as list of lines
     #### Returns:
-    - *dict* > status code, status message, SEARCH block content, REPLACE block content
+    - *dict* > status code, status message, SEARCH index, DIVIDER index, REPLACE index
     """
 
     ### function init --------------------------------------------------------------------------------------------------
 
-    #>> clipboard list is verified upstream
+    #>> clipboard lines param is verified upstream
 
-    ### error payload helper
-    def error_payload(message: str) -> dict[str, int | str | list[str] | list[str]]:
-        return {"status": -1, "message": message, "search": [], "replace": []}
+    ### indices init
+    search_indices: list[int] = []
+    divider_indices: list[int] = []
+    replace_indices: list[int] = []
 
     ### parsing loop ---------------------------------------------------------------------------------------------------
 
-    ### loop init
-    parsing_state: int = 1
-    search_list: list[str] = []
-    replace_list: list[str] = []
-
     ### iterating clipboard list
-    for line in clipboard_list:
+    for index,line in enumerate(clipboard_lines):
 
-        ## discarding lines until search marker found
-        if parsing_state == 1:
-            if re.match(r"^<{5,9}\sSEARCH$", line):
-                parsing_state = 2
-                continue
-            else:
-                continue
+        ## looking for search marker
+        if re.match(r"^<{5,9}\sSEARCH$", line):
+            search_indices.append(index)
 
-        ## recording search block content until divider marker found
-        if parsing_state == 2:
-            if re.match(r"^={5,9}$", line):
-                parsing_state = 3
-                continue
-            else:
-                search_list.append(line)
-                continue
+        ## looking for divider marker
+        elif re.match(r"^={5,9}$", line):
+            divider_indices.append(index)
 
-        ## recording replace block content until replace marker found
-        if parsing_state == 3:
-            if re.match(r"^>{5,9}\sREPLACE$", line):
-                parsing_state = 4
-                break
-            else:
-                replace_list.append(line)
-                continue
+        ## looking for replace marker
+        elif re.match(r"^>{5,9}\sREPLACE$", line):
+            replace_indices.append(index)
 
-    ### parsing outcome returns ----------------------------------------------------------------------------------------
+        ## no markers > continue
+        else:
+            continue
 
-    ### matching parsing state
-    match parsing_state:
+    ### validations and returns ----------------------------------------------------------------------------------------
 
-        ## returning parsing errors
-        case 1:
-            return error_payload(message="Parsing Failure > SEARCH/REPLACE Block Not Found")
-        case 2:
-            return error_payload(message="Parsing Failure > DIVIDER Marker Not Found")
-        case 3:
-            return error_payload(message="Parsing Failure > REPLACE Marker Not Found")
+    ### invalid indices > returning error payload
+    if (
+        len(search_indices) != 1
+        or len(divider_indices) != 1
+        or len(replace_indices) != 1
+        or divider_indices[0] < search_indices[0]
+        or replace_indices[0] < divider_indices[0]
+    ):
+        return {
+            "status": -1, "message": "Parsing Failure > SEARCH/REPLACE Marker(s) Error",
+            "search": search_indices, "divider": divider_indices, "replace": replace_indices
+        }
 
-        ## returning parsing success
-        case 4:
-            return {"status": 0, "message": "OK", "search": search_list, "replace": replace_list}
+    ### valid indices > returning success payload
+    else:
+        return {
+            "status": 0, "message": "Parsing Success",
+            "search": search_indices[0], "divider": divider_indices[0], "replace": replace_indices[0]
+        }
 
-        ## returning state error
-        case default_val:
-            return error_payload(message=f"Parsing Failure > Unknown Parsing State > {default_val}")
-        
 ### manual testing block ###############################################################################################
 if __name__ == "__main__":
-    print("\n[!] Response Parser > No Test Specified\n")
+
+    clipboard_lines: list[str] = [
+        "<<<<<<< SEARCH",
+        "def add(a, b):",
+        "    return a + b",
+        "=======",
+        "def add (a, b, c):",
+        "    return a + b + c",
+        ">>>>>>> REPLACE",
+    ]
+
+    parser_response: dict = response_parser(clipboard_lines=clipboard_lines)
+
+    print()
+    print(parser_response)
+    print()

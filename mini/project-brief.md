@@ -26,7 +26,7 @@ Aider Mini is a lightweight coding assistant with a CLI interface based on and b
 - **CLI Command:** `/apply`
 - **Location:** `mini/editor/`
 - **`editor.py`:** Reads the LLM response from clipboard. Reads content from the local target file. Orchestrates the file edit pipeline.
-- **`response_parser.py`:** Parses the LLM response to isolate the `SEARCH/REPLACE` block.
+- **`response_parser.py`:** Parses the LLM response to locate the `SEARCH/REPLACE` markers.
 - **`search.py`:** Identifies `SEARCH` lines to be replaced in the local file.
 - **`replace.py`:** Replaces `SEARCH` lines with `REPLACE` lines in the local file.
 
