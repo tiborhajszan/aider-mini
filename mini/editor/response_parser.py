@@ -23,13 +23,7 @@ def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str
 
     ### function init --------------------------------------------------------------------------------------------------
 
-    ### invalid clipboard list > returning error payload
-    if (
-        not isinstance(clipboard_list, list)
-        or not all(isinstance(line, str) for line in clipboard_list)
-        or any("\n" in line for line in clipboard_list)
-    ):
-        return make_error(message="Invalid Param: parse_edit_blocks(clipboard_list)")
+    #>> clipboard list is verified upstream
 
     ### function main logic --------------------------------------------------------------------------------------------
 
