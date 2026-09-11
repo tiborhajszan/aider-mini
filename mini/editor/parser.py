@@ -15,10 +15,10 @@ def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str
     - *dict* > status code, status message, SEARCH block content, REPLACE block content
     """
 
-    ### payload helpers ------------------------------------------------------------------------------------------------
+    ### payload helper -------------------------------------------------------------------------------------------------
 
     ### error payload
-    def make_error(message: str) -> dict[str,int|str|list[str]|list[str]]:
+    def make_error(message: str) -> dict[str, int | str | list[str] | list[str]]:
         return {"status": -1, "message": message, "search": [], "replace": []}
 
     ### function init --------------------------------------------------------------------------------------------------
