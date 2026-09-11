@@ -24,7 +24,7 @@ def search_engine(
 
     ### function main logic --------------------------------------------------------------------------------------------
 
-    ### search list empty > returning success (0, 0) payload
+    ### search list empty > returning success payload (0, 0)
     if not search_list:
         return {"status": 0, "message": "OK", "indices": (0, 0)}
     
@@ -32,18 +32,18 @@ def search_engine(
     if len(content_list) < len(search_list):
         return {"status": -1, "message": "Matching Failure > SEARCH Block Overflow", "indices": (-1, -1)}
 
-    ### sliding window matching > returning success (start, end) payload
+    ### sliding window matching > returning success payload (start, end)
     for content_index in range(len(content_list) - len(search_list) + 1):
         if all(
-            content_list[content_index + search_index].strip() == search_list[search_index].strip()
+            content_list[content_index + search_index] == search_list[search_index]
             for search_index in range(len(search_list))
         ):
             return {"status": 0, "message": "OK", "indices": (content_index, content_index + len(search_list))}
         
     ### function ends //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ### no match > returning error payload
-    return {"status": -1, "message": "Matching Failure > SEARCH Block Not Found", "indices": (-1, -1)}
+    ### no match found > returning error payload
+    return {"status": -1, "message": "Matching Failure > SEARCH Block Mismatch", "indices": (-1, -1)}
 
 ### test execution block ###############################################################################################
 if __name__ == "__main__":
