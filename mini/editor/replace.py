@@ -1,12 +1,12 @@
 ########################################################################################################################
-### Aider Mini > File Editor Module > Replace Executor
+### Aider Mini > Local File Editor > Replace Executor
 ### Path: mini/editor/replace.py
 ########################################################################################################################
 
 from pathlib import Path
 
-### apply edits function ###############################################################################################
-def apply_edits(
+### replace executor function ##########################################################################################
+def replace_executor(
     content_list: list[str],
     search_index: tuple[int,int],
     replace_list: list[str],
