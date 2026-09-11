@@ -25,34 +25,41 @@ def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str
 
     #>> clipboard list is verified upstream
 
-    ### function main logic --------------------------------------------------------------------------------------------
-
-    ### insufficient length of clipboard list > returning error payload
-    if len(clipboard_list) <= 3:
-        return make_error(message="Parsing Failure: Insufficient clipboard content")
+    ### parsing loop ---------------------------------------------------------------------------------------------------
 
     ### loop init
-    parsing_status: int = 1
-    search_list: list[str] = []
-    replace_list: list[str] = []
+    parsing_state: int = 1
+    search_list: list[str] = list()
+    replace_list: list[str] = list()
 
     ### iterating clipboard list
     for line in clipboard_list:
 
-        #>> discarding lines until search marker found
-        if parsing_status == 1:
-            if re.match(r"^<{5,9}\sSEARCH$", line): parsing_status = 2
-            continue
+        ## discarding lines until search marker found
+        if parsing_state == 1:
+            if re.match(r"^<{5,9}\sSEARCH$", line):
+                parsing_state = 2
+                continue
+            else:
+                continue
 
-        #>> recording search block content until divider marker found
-        if parsing_status == 2:
-            if re.match(r"^={5,9}$", line): parsing_status = 3; continue
-            search_list.append(line); continue
+        ## recording search block content until divider marker found
+        if parsing_state == 2:
+            if re.match(r"^={5,9}$", line):
+                parsing_state = 3
+                continue
+            else:
+                search_list.append(line)
+                continue
 
-        #>> recording replace block content until replace marker found
-        if parsing_status == 3:
-            if re.match(r"^>{5,9}\sREPLACE$", line): parsing_status = 4; break
-            replace_list.append(line); continue
+        ## recording replace block content until replace marker found
+        if parsing_state == 3:
+            if re.match(r"^>{5,9}\sREPLACE$", line):
+                parsing_state = 4
+                break
+            else:
+                replace_list.append(line)
+                continue
 
     ### function ends //////////////////////////////////////////////////////////////////////////////////////////////////
 
