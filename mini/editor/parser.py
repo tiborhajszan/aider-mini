@@ -1,14 +1,14 @@
 ########################################################################################################################
-### Aider Mini > Editor Module > Model Response Parser
-### Path: mini/editor/parser.py
+### Aider Mini > Local File Editor > Response Parser
+### Path: mini/editor/response_parser.py
 ########################################################################################################################
 
 import re
 
-def parse_edit_blocks(clipboard_list: list[str]) -> dict[str, int | str | list[str] | list[str]]:
+### response parser function ###########################################################################################
+def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str] | list[str]]:
     """
-    ### Model Response Parser
-    Extracts SEARCH/REPLACE diff edit blocks from the clipboard.
+    Parses the LLM response to isolate the SEARCH/REPLACE block.
     #### Params:
     - *clipboard_list* > clipboard content as list of lines
     #### Returns:
