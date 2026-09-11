@@ -1,10 +1,10 @@
 ########################################################################################################################
-### Aider Mini > File Editor Module > Search Block Matching
-### Path: aider-mini/mini/editor/search.py
+### Aider Mini > File Editor Module > Search Engine
+### Path: mini/editor/search.py
 ########################################################################################################################
 
-### match search block function ########################################################################################
-def match_search_block(
+### search engine function #############################################################################################
+def search_engine(
     content_list: list[str],
     search_list: list[str],
 ) -> dict[str, int | str | tuple[int, int]]:
