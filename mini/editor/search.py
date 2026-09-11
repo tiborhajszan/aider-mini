@@ -45,7 +45,6 @@ def search_engine(
     ### no match found > returning error payload
     return {"status": -1, "message": "Matching Failure > SEARCH Block Mismatch", "indices": (-1, -1)}
 
-### test execution block ###############################################################################################
+### manual testing block ###############################################################################################
 if __name__ == "__main__":
-    result = match_search_block(content_list=["1", "         2", "3          ", " 4  "], search_list=["2", "3", "4"])
-    print("\n", result, "\n")
+    print("\n[!] Search Engine > No Test Specified\n")
