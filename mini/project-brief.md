@@ -22,9 +22,9 @@ Aider Mini is a lightweight coding assistant with a CLI interface based on and b
 - **Repository Prompt Generator (`/repo`):** Copies the *repository prompt* to the clipboard that tells the LLM how to access the project repository and where to find general project context.
 - **Active File Selector (`/file`):** Copies the *active file prompt* to the clipboard with instructions for the LLM on which file to edit and how to retrieve its current contents.
 
-### Pillar 2 > Right Hand | Local File Editor
+### Pillar 2 > Local File Editor
 - **CLI Command:** `/apply`
-- **Location:** `aider-mini/mini/editor/`
+- **Location:** `mini/editor/`
 - **`editor.py`:** Reads the LLM response from clipboard. Reads content from the local target file. Orchestrates the file edit pipeline.
 - **`parser.py`:** Parses the LLM response to isolate the `SEARCH/REPLACE` diff edit block.
 - **`search.py`:** Identifies `SEARCH` lines to be replaced in the local file.
@@ -59,4 +59,4 @@ Contains all folders/files of **Aider Mini** in isolation while preserving the a
 - **Phase 3: File Context Module (`mini/context.py`)**
     - Creates context from specified read-only files, e.g., coding conventions.
     - Autodetects focused/active editor files and assembles context from them.
-- **Phase 4:** Builds the *RIGHT HAND | Local File Editor Module*.
+- **Phase 4:** Builds the *Local File Editor Module*.

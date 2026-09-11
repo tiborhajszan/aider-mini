@@ -1,6 +1,6 @@
 ########################################################################################################################
-### Aider Mini > File Editor Module > Diff Edit Executor
-### Path: aider-mini/mini/editor/replace.py
+### Aider Mini > File Editor Module > Replace Executor
+### Path: mini/editor/replace.py
 ########################################################################################################################
 
 from pathlib import Path
@@ -13,12 +13,12 @@ def apply_edits(
     target_path: str
 ) -> dict[str, int | str]:
     """
-    Applies the `REPLACE` block content to modify target lines in the local file.
+    Replaces SEARCH lines with REPLACE lines in the local file.
     #### Params:
-    - *content_list* > target file content as list of lines
+    - *content_list* > local file content as list of lines
     - *search_index* > SEARCH block slice indices as tuple
     - *replace_list* > REPLACE block content as list of lines
-    - *target_path* > path to local target file as string
+    - *target_path* > path to local file as string
     #### Returns:
     - *dict* > status code, status message
     """
