@@ -82,31 +82,4 @@ def response_parser(clipboard_list: list[str]) -> dict[str, int | str | list[str
         
 ### manual testing block ###############################################################################################
 if __name__ == "__main__":
-
-    print("\n[!] Running in Test Mode...\n")
-
-    clipboard_list: list[str] = [
-        "```python",
-        "src/utils/calculator.py",
-        "<<<<<<< SEARCH",
-        "def add(a: int, b: int) -> int:",
-        "=======",
-        "def add(a: int, b: int) -> int:",
-        "    return a + b",
-        ">>>>>>> REPLACE",
-        "```"
-    ]
-
-    return_dict = parse_edit_blocks(clipboard_list=clipboard_list)
-
-    print("Status:")
-    print(return_dict["status"], return_dict["message"])
-    print()
-
-    print("SEARCH block:")
-    for line in return_dict["search"]: print(line)
-    print()
-
-    print("REPLACE block:")
-    for line in return_dict["replace"]: print(line)
-    print()
+    print("\n[!] Response Parser > No Test Specified\n")
