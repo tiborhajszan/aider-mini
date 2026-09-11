@@ -25,42 +25,13 @@ def apply_edits(
 
     ### function init --------------------------------------------------------------------------------------------------
 
-    ### invalid content list > returning error payload
-    if (
-        not isinstance(content_list, list)
-        or not all(isinstance(line, str) for line in content_list)
-    ):
-        return {"status": -1, "message": "Invalid Param > apply_edits(content_list)"}
+    #>> content list is verified upstream
+    #>> search index is verified upstream
+    #>> replace list is verified upstream
+    #>> target path is verified upstream
 
-    ### invalid search index > returning error payload
-    if (
-        not isinstance(search_index, tuple)
-        or len(search_index) != 2
-        or not all(isinstance(item, int) and not isinstance(item, bool) for item in search_index)
-        or search_index[0] < 0
-        or search_index[0] > search_index[1]
-        or len(content_list) < search_index[1]
-    ):
-        return {"status": -1, "message": "Invalid Param > apply_edits(search_index)"}
-
-    ### invalid replace list > returning error payload
-    if (
-        not isinstance(replace_list, list)
-        or not all(isinstance(line, str) for line in replace_list)
-    ):
-        return {"status": -1, "message": "Invalid Param > apply_edits(replace_list)"}
-
-    ### invalid target path > returning error payload
-    if (
-        not isinstance(target_path, str)
-        or not target_path.strip()
-    ):
-        return {"status": -1, "message": "Invalid Param > apply_edits(target_path)"}
-
-    ### invalid target file > returning error payload
+    ### converting target path str >>> path
     target_file: Path = Path(target_path)
-    if not target_file.is_file():
-        return {"status": -1, "message": "Invalid Param > apply_edits(target_path)"}
     
     ### function main logic --------------------------------------------------------------------------------------------
 
